@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PayPilot AI - Agentic Payment Orchestration</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="toast" class="toast"></div>
+<div class="cursor-robo" id="cursor-robo" aria-hidden="true">
+    <span class="cursor-robo-antenna"></span>
+    <span class="cursor-robo-eye left"></span>
+    <span class="cursor-robo-eye right"></span>
+    <span class="cursor-robo-smile"></span>
+</div>
+
+<div class="app-shell" id="app-shell">
+    <aside class="sidebar">
+        <div class="sidebar-head">
+            <div class="bot-mark" aria-hidden="true">
+                <svg viewBox="0 0 48 48">
+                    <rect x="10" y="14" width="28" height="24" rx="10"></rect>
+                    <path d="M24 14V8"></path>
+                    <circle cx="18" cy="25" r="2"></circle>
+                    <circle cx="30" cy="25" r="2"></circle>
+                    <path d="M19 32h10"></path>
+                    <path d="M8 25H5M43 25h-3"></path>
+                </svg>
+            </div>
+            <div class="brand">
+                <div class="brand-copy">
+                    <h1 class="brand-wordmark">
+                        <span class="word-red">Pay</span><span class="word-orange">P</span><span class="word-blue">ilot</span><span class="word-violet"> AI</span>
+                    </h1>
+                    <p>Think. Check. Explain. Approve.</p>
+                </div>
+            </div>
+
+            <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle navigation">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="4" y="5" width="16" height="14" rx="3"></rect>
+                    <path d="M9 5v14"></path>
+                    <path d="M13 9h4M13 12h4M13 15h3"></path>
+                </svg>
+            </button>
+        </div>
+
+        <nav class="side-nav">
+            <button class="nav-item active" data-section="dashboard" onclick="switchSection('dashboard', this)">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M4 4h7v7H4zM13 4h7v5h-7zM13 11h7v9h-7zM4 13h7v7H4z"></path></svg>
+                <span class="nav-label">Command Center</span>
+            </button>
+            <button class="nav-item" data-section="orchestrator" onclick="switchSection('orchestrator', this)">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M3 12h4M17 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"></path><circle cx="12" cy="12" r="4"></circle></svg>
+                <span class="nav-label">AI Orchestrator</span>
+            </button>
+            <button class="nav-item" data-section="bills" onclick="switchSection('bills', this)">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M7 3h10l2 2v16l-3-1.5-2 1-2-1-2 1-2-1L5 21V5z"></path><path d="M8 8h8M8 12h8M8 16h5"></path></svg>
+                <span class="nav-label">Bills</span>
+            </button>
+            <button class="nav-item" data-section="account" onclick="switchSection('account', this)">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M4 7h16v10H4z"></path><path d="M8 11h4M16 13h.01"></path><path d="M7 7V5h10v2"></path></svg>
+                <span class="nav-label">My Account</span>
+            </button>
+            <button class="nav-item" data-section="subscriptions" onclick="switchSection('subscriptions', this)">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M7 7h10v10H7z"></path><path d="M4 10V6a2 2 0 0 1 2-2h4M14 20h4a2 2 0 0 0 2-2v-4"></path></svg>
+                <span class="nav-label">Subscriptions</span>
+            </button>
+            <button class="nav-item" data-section="approvals" onclick="switchSection('approvals', this)">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"></path><path d="M8.5 12.5l2 2 5-5"></path></svg>
+                <span class="nav-label">Approvals</span>
+            </button>
+            <button class="nav-item" data-section="transactions" onclick="switchSection('transactions', this)">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M4 7h16M7 11h10M9 15h6"></path><rect x="4" y="5" width="16" height="14" rx="2"></rect></svg>
+                <span class="nav-label">Transactions</span>
+            </button>
+            <button class="nav-item" data-section="logs" onclick="switchSection('logs', this)">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M6 4h12v16H6z"></path><path d="M9 8h6M9 12h6M9 16h4"></path></svg>
+                <span class="nav-label">Agent Logs</span>
+            </button>
+            <button class="nav-item" data-section="about" onclick="switchSection('about', this)">
+                <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 10v7M12 7h.01"></path></svg>
+                <span class="nav-label">About / Guide</span>
+            </button>
+        </nav>
+
+        <div class="safety-card">
+            <span>Financial Safety Firewall</span>
+            <strong>Smart approval enabled</strong>
+            <p>Low-risk payments can clear automatically. Risky or high-value items pause for review.</p>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="topbar">
+            <div class="topbar-title">
+                <span id="page-icon" class="page-title-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M4 4h7v7H4zM13 4h7v5h-7zM13 11h7v9h-7zM4 13h7v7H4z"></path></svg>
+                </span>
+                <h2 id="page-title">Command Center</h2>
+            </div>
+
+            <div class="top-actions">
+                <button class="secondary icon-only" onclick="setupDatabase()" aria-label="Reset demo data" title="Reset demo data">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M3 12a9 9 0 0 1 15.1-6.6L21 8"></path>
+                        <path d="M21 3v5h-5"></path>
+                        <path d="M21 12a9 9 0 0 1-15.1 6.6L3 16"></path>
+                        <path d="M3 21v-5h5"></path>
+                    </svg>
+                </button>
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Switch to dark mode" title="Switch to dark mode">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"></path></svg>
+                </button>
+            </div>
+        </header>
+
+        <section id="dashboard" class="page-section active-section">
+            <div class="hero-panel">
+                <div class="hero-copy">
+                    <h2>Pay bills faster without losing control.</h2>
+                    <p>PayPilot checks intent, risk, cash safety, and the best payment method, then auto-clears safe bills while routing sensitive payments to review.</p>
+
+                    <div class="hero-actions">
+                        <button onclick="runPrompt('Manage my payments this week safely')">Run Autopilot</button>
+                        <button class="secondary" onclick="runPrompt('Find risky payments and explain why')">Risk Scan</button>
+                    </div>
+
+                    <div class="landing-kpis">
+                        <div><span>Safe bills</span><strong>Auto approved</strong></div>
+                        <div><span>Risky bills</span><strong>Review first</strong></div>
+                        <div><span>Every move</span><strong>Explained</strong></div>
+                    </div>
+                </div>
+
+                <div class="ai-grid-card landing-bot-card">
+                    <div class="scan-line"></div>
+                    <div class="pilot-robot-stage payment-animation" aria-hidden="true">
+                        <div class="payment-bubble bubble-upi">UPI</div>
+                        <div class="payment-bubble bubble-card">CARD</div>
+                        <div class="payment-bubble bubble-transaction">TXN</div>
+                        <div class="bot3d">
+                            <div class="bot3d-antenna"></div>
+                            <div class="bot3d-head">
+                                <span class="bot3d-eye left"></span>
+                                <span class="bot3d-eye right"></span>
+                                <span class="bot3d-mouth"></span>
+                            </div>
+                            <div class="bot3d-body">
+                                <span></span>
+                                <strong>AI</strong>
+                            </div>
+                            <div class="bot3d-arm left"></div>
+                            <div class="bot3d-arm right thumbs"></div>
+                            <div class="bot3d-phone">
+                                <span></span>
+                                <strong>Paid</strong>
+                            </div>
+                            <div class="bot3d-base"></div>
+                        </div>
+                        <div class="done-spark spark-one"></div>
+                        <div class="done-spark spark-two"></div>
+                        <div class="done-spark spark-three"></div>
+                    </div>
+                    <h3>AI Safety Grid</h3>
+                    <div class="grid-metric"><span>Intent</span><strong>Classified</strong></div>
+                    <div class="grid-metric"><span>Risk</span><strong>Scored</strong></div>
+                    <div class="grid-metric"><span>Method</span><strong>Optimized</strong></div>
+                    <div class="grid-metric"><span>Decision</span><strong>Smart routed</strong></div>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card metric-link" role="button" tabindex="0" onclick="openDashboardMetric('balance')" onkeydown="openDashboardMetricFromKey(event, 'balance')" aria-label="Open safe balance overview">
+                    <div class="stat-top">
+                        <span class="stat-icon"><svg viewBox="0 0 24 24"><path d="M4 7h16v10H4z"></path><path d="M7 10h2M15 14h2"></path><circle cx="12" cy="12" r="2"></circle></svg></span>
+                        <p>Safe Balance</p>
+                    </div>
+                    <h3 id="balance">INR 0</h3>
+                </div>
+                <div class="stat-card metric-link" role="button" tabindex="0" onclick="openDashboardMetric('pending')" onkeydown="openDashboardMetricFromKey(event, 'pending')" aria-label="Open pending bills overview">
+                    <div class="stat-top">
+                        <span class="stat-icon"><svg viewBox="0 0 24 24"><path d="M7 3h10l2 2v16l-3-1.5-2 1-2-1-2 1-2-1L5 21V5z"></path><path d="M8 8h8M8 12h8M8 16h5"></path></svg></span>
+                        <p>Pending Bills</p>
+                    </div>
+                    <h3 id="pending-bills">0</h3>
+                </div>
+                <div class="stat-card metric-link" role="button" tabindex="0" onclick="openDashboardMetric('total')" onkeydown="openDashboardMetricFromKey(event, 'total')" aria-label="Open total pending overview">
+                    <div class="stat-top">
+                        <span class="stat-icon"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"></path><path d="M8 6v12M16 6v12"></path></svg></span>
+                        <p>Total Pending</p>
+                    </div>
+                    <h3 id="total-pending">INR 0</h3>
+                </div>
+                <div class="stat-card metric-link danger" role="button" tabindex="0" onclick="openDashboardMetric('risk')" onkeydown="openDashboardMetricFromKey(event, 'risk')" aria-label="Open risky bills overview">
+                    <div class="stat-top">
+                        <span class="stat-icon"><svg viewBox="0 0 24 24"><path d="M12 3l9 16H3z"></path><path d="M12 9v4M12 17h.01"></path></svg></span>
+                        <p>Risky Items</p>
+                    </div>
+                    <h3 id="risky-items">0</h3>
+                </div>
+                <div class="stat-card metric-link" role="button" tabindex="0" onclick="openDashboardMetric('completed')" onkeydown="openDashboardMetricFromKey(event, 'completed')" aria-label="Open completed transactions overview">
+                    <div class="stat-top">
+                        <span class="stat-icon"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"></path></svg></span>
+                        <p>Completed</p>
+                    </div>
+                    <h3 id="transactions-count">0</h3>
+                </div>
+            </div>
+
+            <div class="pilot-lab">
+                <div class="panel-heading">
+                    <div>
+                        <h3>Payment Safety Radar</h3>
+                        <p>Risk, urgency, and amount pressure in one view.</p>
+                    </div>
+                    <span class="badge pending">Differentiator</span>
+                </div>
+                <div class="radar-layout">
+                    <div id="risk-radar" class="radar-map"></div>
+                    <div id="radar-insights" class="radar-insights"></div>
+                </div>
+            </div>
+
+            <div class="grid-two">
+                <div class="panel">
+                    <div class="panel-heading"><h3>Upcoming Payments</h3><span>Click a bill to inspect it</span></div>
+                    <div id="dashboard-bills"></div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-heading"><h3>Subscription Waste Watch</h3></div>
+                    <div id="dashboard-subscriptions"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="metric-detail" class="page-section">
+            <div class="detail-hero metric-detail-hero">
+                <button class="text-button" onclick="switchSection('dashboard')">Back to Command Center</button>
+                <div class="detail-title-row">
+                    <div>
+                        <span id="metric-detail-kicker" class="badge pending">Overview</span>
+                        <h2 id="metric-detail-title">Dashboard Overview</h2>
+                        <p id="metric-detail-copy">Select a dashboard metric to see the related detail.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-two metric-overview-grid">
+                <div class="panel">
+                    <div class="panel-heading">
+                        <h3 id="metric-primary-heading">Related Items</h3>
+                        <span id="metric-primary-count">0 items</span>
+                    </div>
+                    <div id="metric-detail-list"></div>
+                </div>
+
+                <div class="panel metric-insight-panel">
+                    <div class="panel-heading"><h3>Overview Signals</h3></div>
+                    <div id="metric-detail-insights"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="payment-detail" class="page-section">
+            <div class="detail-hero">
+                <button class="text-button" onclick="switchSection('bills')">Back to Bills</button>
+                <div class="detail-title-row">
+                    <div>
+                        <span id="detail-status" class="badge pending">Analysis</span>
+                        <h2 id="detail-biller">Selected Payment</h2>
+                        <p id="detail-meta">Open a pending bill to see payment intelligence.</p>
+                    </div>
+                    <div class="detail-action-group">
+                        <button id="detail-approval-button" onclick="prepareApprovalFromDetail()">Prepare Approval</button>
+                        <button id="detail-cancel-button" class="secondary danger-outline hidden" onclick="cancelRiskPaymentFromDetail()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-grid">
+                <div class="panel">
+                    <div class="panel-heading"><h3>Payment Snapshot</h3></div>
+                    <div id="detail-summary" class="snapshot-grid"></div>
+                </div>
+
+                <div class="explain-panel xai-panel detail-explain">
+                    <div class="panel-heading xai-heading">
+                        <div class="xai-title">
+                            <span class="xai-core" aria-hidden="true"></span>
+                            <div>
+                                <h3>XAI Decision Core</h3>
+                                <p>Transparent reasoning for this payment.</p>
+                            </div>
+                        </div>
+                        <span class="xai-chip">Explainable</span>
+                    </div>
+                    <div id="detail-explanation-box" class="explanation-box">
+                        <div class="empty-state">Open a bill to load explainability.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-two">
+                <div class="panel">
+                    <div class="panel-heading"><h3>Risk Analysis</h3></div>
+                    <div id="detail-risk-box"></div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-heading"><h3>Recommended Method</h3></div>
+                    <div id="detail-method-box"></div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-heading"><h3>Agent Timeline</h3></div>
+                <div id="detail-timeline"></div>
+            </div>
+        </section>
+
+        <section id="account" class="page-section">
+            <div class="account-hero">
+                <div>
+                    <h2>My Account</h2>
+                    <p>Track available balance, required minimum balance, payment thresholds, and safe autopay readiness.</p>
+                </div>
+                <div class="balance-orb">
+                    <svg class="field-icon bank-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10l9-6 9 6"></path><path d="M5 10h14v9H5z"></path><path d="M8 10v9M12 10v9M16 10v9"></path><path d="M4 19h16"></path></svg>
+                    <span>Available</span>
+                    <strong id="account-balance">INR 0</strong>
+                </div>
+            </div>
+
+            <div class="account-grid">
+                <div class="account-card primary icon-card bank-card">
+                    <svg class="field-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10l9-6 9 6"></path><path d="M5 10h14v9H5z"></path><path d="M8 10v9M12 10v9M16 10v9"></path><path d="M4 19h16"></path></svg>
+                    <span>Recommended Minimum Balance</span>
+                    <strong id="recommended-minimum-balance">INR 0</strong>
+                    <p id="balance-guidance">Loading account balance plan...</p>
+                </div>
+                <div class="account-card icon-card">
+                    <svg class="field-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"></path><path d="M8.5 12.5l2 2 5-5"></path></svg>
+                    <span>Configured Minimum</span>
+                    <strong id="minimum-balance">INR 0</strong>
+                    <p>Your current account rule for minimum safe balance.</p>
+                </div>
+                <div class="account-card icon-card">
+                    <svg class="field-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v10H4z"></path><path d="M7 10h2M15 14h2"></path><circle cx="12" cy="12" r="2"></circle></svg>
+                    <span>Safe Buffer</span>
+                    <strong id="safe-buffer">INR 0</strong>
+                    <p>Money available above your minimum balance rule.</p>
+                </div>
+                <div class="account-card icon-card">
+                    <svg class="field-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"></path><path d="M8 6v12M16 6v12"></path></svg>
+                    <span>After All Pending Bills</span>
+                    <strong id="after-pending-balance">INR 0</strong>
+                    <p>Projected balance if every pending bill clears today.</p>
+                </div>
+            </div>
+
+            <div class="grid-two">
+                <div class="panel">
+                    <div class="panel-heading">
+                        <div>
+                            <h3>Account Rules</h3>
+                            <p>These limits decide when PayPilot can recommend autopay, approval, or blocking.</p>
+                        </div>
+                    </div>
+                    <div id="account-rules" class="rule-stack"></div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-heading">
+                        <div>
+                            <h3>Payment Methods</h3>
+                            <p>Available methods ranked by limits, fees, cashback, and reliability.</p>
+                        </div>
+                    </div>
+                    <form id="add-method-form" class="method-form" autocomplete="off" onsubmit="addPaymentMethod(event)">
+                        <div class="form-grid">
+                            <label>
+                                <span>Type</span>
+                                <select id="new-method-type" required>
+                                    <option value="Debit Card">Debit Card</option>
+                                    <option value="Credit Card">Credit Card</option>
+                                    <option value="Net Banking">Net Banking</option>
+                                    <option value="UPI">UPI</option>
+                                    <option value="Wallet">Wallet</option>
+                                </select>
+                            </label>
+                            <label>
+                                <span>Provider</span>
+                                <input id="new-method-provider" type="text" placeholder="Bank or provider" required>
+                            </label>
+                            <label>
+                                <span>Card / account details</span>
+                                <input id="new-method-identifier" type="password" placeholder="Stored as masked only" required>
+                            </label>
+                            <label>
+                                <span>Available limit</span>
+                                <input id="new-method-limit" type="number" min="1" step="1" placeholder="50000" required>
+                            </label>
+                            <label>
+                                <span>Cashback</span>
+                                <input id="new-method-cashback" type="number" min="0" step="1" value="0">
+                            </label>
+                            <label>
+                                <span>Fee</span>
+                                <input id="new-method-fee" type="number" min="0" step="1" value="0">
+                            </label>
+                        </div>
+                        <button type="submit">Add protected method</button>
+                    </form>
+                    <div id="account-methods"></div>
+                </div>
+            </div>
+
+            <div class="grid-two">
+                <div class="panel">
+                    <div class="panel-heading"><h3>Autopay Candidates</h3><span id="autopay-count">0 items</span></div>
+                    <div id="account-autopay-list"></div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-heading"><h3>Risk Watchlist</h3><span id="watchlist-count">0 items</span></div>
+                    <div id="account-risk-list"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="orchestrator" class="page-section orchestrator-idle">
+            <div class="orchestrator-hero">
+                <div>
+                    <h2>Tell PayPilot what to do. It plans, checks, and acts.</h2>
+                    <p>Safe payment tasks are completed automatically. Risky, duplicate, cashflow-sensitive, or high-value items stay protected by policy routing.</p>
+                </div>
+                <div class="orchestrator-balance-card">
+                    <span>Available Balance</span>
+                    <strong id="orchestrator-balance">INR 0</strong>
+                    <p>Refreshes after every completed payment.</p>
+                </div>
+            </div>
+
+            <div class="automation-strip">
+                <div>
+                    <span class="automation-dot teal"></span>
+                    <strong>Intent</strong>
+                    <p>Understands payment goals.</p>
+                </div>
+                <div>
+                    <span class="automation-dot orange"></span>
+                    <strong>Risk</strong>
+                    <p>Scores fraud, waste, and duplicates.</p>
+                </div>
+                <div>
+                    <span class="automation-dot violet"></span>
+                    <strong>Method</strong>
+                    <p>Chooses the best rail.</p>
+                </div>
+                <div>
+                    <span class="automation-dot magenta"></span>
+                    <strong>Action</strong>
+                    <p>Auto-pays safe bills.</p>
+                </div>
+            </div>
+
+            <div class="orchestrator-workspace">
+                <div class="chat-panel task-console">
+                    <div class="panel-heading">
+                        <div>
+                            <h3>Task Console</h3>
+                            <p id="prompt-hint">Ready for a payment request.</p>
+                        </div>
+                    </div>
+
+                    <div id="chat-box" class="chat-box">
+                        <div class="bot-message">
+                            Hi, I am PayPilot AI. I auto-clear safe payments and ask for approval when risk or policy requires it.
+                        </div>
+                    </div>
+
+                    <div class="chat-input-row">
+                        <textarea id="user-message" rows="4" placeholder="Ask PayPilot to do something, for example: Pay my most urgent low-risk bill" onkeydown="if((event.ctrlKey || event.metaKey) && event.key === 'Enter') sendMessage()"></textarea>
+                        <button onclick="sendMessage()">Run</button>
+                    </div>
+
+                    <div id="context-suggestions" class="context-suggestions"></div>
+
+                    <div class="quick-prompts">
+                        <button onclick="usePrompt('Manage my payments this week safely')">Autopilot</button>
+                        <button onclick="usePrompt('Pay my most urgent safe bill')">Pay Safe Bill</button>
+                        <button onclick="usePrompt('Find risky payments and explain why')">Risk Scan</button>
+                        <button onclick="usePrompt('Analyze my subscriptions and waste')">Waste Scan</button>
+                    </div>
+                </div>
+
+                <div class="explain-panel xai-panel">
+                    <div class="panel-heading xai-heading">
+                        <div class="xai-title">
+                            <span class="xai-core" aria-hidden="true"></span>
+                            <div>
+                                <h3>XAI Decision Core</h3>
+                                <p>Live reasoning from the agent workflow.</p>
+                            </div>
+                        </div>
+                        <span class="xai-chip">Auditable</span>
+                    </div>
+                    <div id="explanation-box" class="explanation-box">
+                        <div class="empty-state">No decision yet.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="orchestrator-results">
+                <div class="panel timeline-panel">
+                    <div class="panel-heading">
+                        <div>
+                            <h3>Agent Timeline</h3>
+                            <p>Every autonomous decision is traceable.</p>
+                        </div>
+                    </div>
+                    <div id="agent-timeline"></div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-heading">
+                        <div>
+                            <h3>Safety-First Plan</h3>
+                            <p>Sorted by safety, urgency, amount, and policy pressure.</p>
+                        </div>
+                    </div>
+                    <div id="plan-box"><div class="empty-state">No payment plan generated yet.</div></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="bills" class="page-section">
+            <div class="page-hero">
+                <div>
+                    <h2>Pending Bills</h2>
+                    <p>Open any bill to see risk, method selection, policy checks, and whether it can be handled automatically.</p>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-heading"><h3>Pending Bills</h3><span>Click any bill for payment intelligence</span></div>
+                <div id="bills-list"></div>
+            </div>
+        </section>
+
+        <section id="subscriptions" class="page-section">
+            <div class="page-hero">
+                <div>
+                    <h2>Subscriptions</h2>
+                    <p>Review unused, expensive, or forgotten subscriptions before they quietly drain your balance.</p>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-heading"><h3>Subscription Waste Analysis</h3></div>
+                <div id="subscriptions-list"></div>
+            </div>
+        </section>
+
+        <section id="approvals" class="page-section">
+            <div class="page-hero">
+                <div>
+                    <h2>Approval Queue</h2>
+                    <p>Only payments that cross safety, risk, or value thresholds wait here. Safe low-risk payments bypass this queue.</p>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-heading"><h3>Human Approval Queue</h3></div>
+                <div id="approvals-list"></div>
+            </div>
+        </section>
+
+        <section id="transactions" class="page-section">
+            <div class="page-hero">
+                <div>
+                    <h2>Transactions</h2>
+                    <p>Track every executed payment with method, risk score, status, and transaction reference.</p>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-heading"><h3>Transaction History</h3></div>
+                <div id="transactions-list"></div>
+            </div>
+        </section>
+
+        <section id="logs" class="page-section">
+            <div class="page-hero">
+                <div>
+                    <h2>Decision Logs</h2>
+                    <p>See how the AI agents reasoned through intent, selection, risk, compliance, execution, and monitoring.</p>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-heading"><h3>Agent Decision Logs</h3></div>
+                <div id="logs-list"></div>
+            </div>
+        </section>
+
+        <section id="about" class="page-section">
+            <div class="page-hero">
+                <div>
+                    <h2>About PayPilot AI</h2>
+                    <p>PayPilot is an agentic payment orchestration system that understands a user request, selects the right bill, checks risk and balance safety, chooses a payment method, asks for approval when needed, and records every decision for audit.</p>
+                </div>
+            </div>
+
+            <div class="guide-grid">
+                <div class="guide-card clickable" role="button" tabindex="0" onclick="openGuideTarget('orchestrator')" onkeydown="openGuideTargetFromKey(event, 'orchestrator')" aria-label="Open AI Orchestrator">
+                    <div class="guide-visual"><svg viewBox="0 0 96 72" aria-hidden="true"><rect x="10" y="12" width="76" height="48" rx="10"></rect><path d="M24 28h18M24 40h30M24 52h20"></path><circle cx="68" cy="36" r="10"></circle><path d="M68 20v6M68 46v6M52 36h6M78 36h6"></path></svg></div>
+                    <h3>Run AI Tasks</h3>
+                    <p>The Orchestrator coordinates intent detection, planning, bill selection, risk scoring, method optimization, compliance checks, approval routing, execution, monitoring, and explanation.</p>
+                </div>
+                <div class="guide-card clickable" role="button" tabindex="0" onclick="openGuideTarget('approvals')" onkeydown="openGuideTargetFromKey(event, 'approvals')" aria-label="Open Approval Queue">
+                    <div class="guide-visual"><svg viewBox="0 0 96 72" aria-hidden="true"><path d="M48 8l28 11v17c0 16-11 25-28 32-17-7-28-16-28-32V19z"></path><path d="M35 36l9 9 18-20"></path><path d="M24 58h48"></path></svg></div>
+                    <h3>Approval Routing</h3>
+                    <p>Low-risk payments can execute automatically. Medium-risk, duplicate, waste, high-value, or policy-sensitive payments pause and ask the user to open the Approval Queue before execution.</p>
+                </div>
+                <div class="guide-card clickable" role="button" tabindex="0" onclick="openGuideTarget('logs')" onkeydown="openGuideTargetFromKey(event, 'logs')" aria-label="Open Agent Logs">
+                    <div class="guide-visual"><svg viewBox="0 0 96 72" aria-hidden="true"><rect x="16" y="10" width="64" height="52" rx="8"></rect><path d="M28 26h40M28 38h30M28 50h22"></path><circle cx="70" cy="50" r="6"></circle><path d="M70 41v-7"></path></svg></div>
+                    <h3>Explainable AI</h3>
+                    <p>The XAI panel and Agent Logs show why a bill was selected, what risk signals were found, which payment method was chosen, and why the final decision was allowed, blocked, or sent for approval.</p>
+                </div>
+                <div class="guide-card clickable" role="button" tabindex="0" onclick="openGuideTarget('transactions')" onkeydown="openGuideTargetFromKey(event, 'transactions')" aria-label="Open Transactions">
+                    <div class="guide-visual"><svg viewBox="0 0 96 72" aria-hidden="true"><path d="M20 18h56v36H20z"></path><path d="M30 30h22M30 42h14"></path><path d="M62 30l7 7-7 7"></path><path d="M20 56h56"></path></svg></div>
+                    <h3>Learning Signal</h3>
+                    <p>The Reinforcement Feedback Agent treats human approval and rejection outcomes as reward feedback. It adds a confidence signal to future orchestration without removing the human approval guardrail.</p>
+                </div>
+                <div class="guide-card clickable" role="button" tabindex="0" onclick="openGuideTarget('account')" onkeydown="openGuideTargetFromKey(event, 'account')" aria-label="Open My Account">
+                    <div class="guide-visual"><svg viewBox="0 0 96 72" aria-hidden="true"><path d="M14 28l34-20 34 20"></path><path d="M22 28h52v32H22z"></path><path d="M34 28v32M48 28v32M62 28v32"></path><path d="M18 60h60"></path></svg></div>
+                    <h3>Account Rules</h3>
+                    <p>The Account page explains safe balance, approval threshold, autopay readiness, available payment methods, and risk watchlist items used by the compliance and optimizer agents.</p>
+                </div>
+                <div class="guide-card clickable" role="button" tabindex="0" onclick="openGuideTarget('transactions')" onkeydown="openGuideTargetFromKey(event, 'transactions')" aria-label="Open Transaction History">
+                    <div class="guide-visual"><svg viewBox="0 0 96 72" aria-hidden="true"><rect x="16" y="14" width="64" height="44" rx="8"></rect><path d="M28 30h18M28 42h28"></path><path d="M60 37l7 7 13-16"></path></svg></div>
+                    <h3>Demo Flow</h3>
+                    <p>Start from Command Center, run an Orchestrator prompt, open the approval follow-up if required, approve or reject the payment, then verify the result in Transactions and Agent Logs.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
